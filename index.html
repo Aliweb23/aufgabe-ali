@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookstore Sales</title>
+    <style>
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+/* CSS-Styling für das Filterformular */
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    margin-right: 10px;
+}
+
+    </style>
+</head>
+<body>
+    <!-- Schritt 3: Erstellen einer HTML-Seite mit Filtern -->
+    <h1>Bookstore Sales</h1>
+    <form id="filter-form">
+        <label for="customer-filter">Customer:</label>
+        <input type="text" id="customer-filter" name="customer-filter">
+
+        <label for="product-filter">Product:</label>
+        <input type="text" id="product-filter" name="product-filter">
+
+        <label for="price-filter">Price:</label>
+        <input type="number" id="price-filter" name="price-filter" step="0.01" min="0">
+
+        <button type="submit">Filter</button>
+    </form>
+
+    <div id="sales-table">
+        <!-- Hier wird die Tabelle mit den Verkäufen dynamisch eingefügt -->
+        <div id="sales-table">
+            <table id="sales">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Hier werden die Verkäufe dynamisch eingefügt -->
+                    
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+
+    <script>
+        // Hier kommt dein JavaScript für die Interaktivität hin
+    </script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!-- ++++ Meine Vorangehenweise ++++++ -->
+
+ 1-Datenbankschema entwerfen: Zuerst müssen ich ein Datenbankschema entwerfen, 
+ das die Informationen aus der Json-Datei effizient speichern kann. 
+    sql
+    Copy code
+    CREATE TABLE Verkäufe (
+        ID INT AUTO_INCREMENT PRIMARY KEY,
+        Kunde VARCHAR(255),
+        Produkt VARCHAR(255),
+        Preis DECIMAL(10, 2)
+    );
+    Dieses einfache Schema enthält eine Tabelle namens "Verkäufe" mit vier Spalten:
+
+    ID: Ein eindeutiger Schlüssel für jeden Verkauf (automatisch inkrementiert).
+    Kunde: Der Name des Kunden.
+    Produkt: Der Name des verkauften Produkts.
+    Preis: Der Preis des verkauften Produkts.
+    Nachdem wir das Datenbankschema haben, können wir fortfahren, die Json-Daten zu lesen und in die Datenbank zu speichern. Soll ich mit diesem Schritt weitermachen?
+
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2-Lesen der Json-Daten und Speichern in der Datenbank mit PHP,
+  ich müssen das Json lesen und die Daten in die entsprechende Datenbanktabelle einfügen. 
+    Die Json-Daten lesen.
+    Die Daten in PHP-Arrays umwandeln.
+    Eine Datenbankverbindung herstellen.
+    Die Daten in die "Verkäufe"-Tabelle einfügen.
+
+    <!-- +++php code+++ -->
+    <?php
+    // Json-Daten lesen
+    $jsonData = file_get_contents('verkäufe.json');
+    $data = json_decode($jsonData, true);
+
+    // Datenbankverbindung herstellen
+    $servername = "localhost";
+    $username = "username";
+    $password = "password";
+    $dbname = "bookstore_sales";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Überprüfen der Verbindung
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Einfügen der Daten in die Datenbank
+    foreach ($data as $sale) {
+        $kunde = $conn->real_escape_string($sale['Kunde']);
+        $produkt = $conn->real_escape_string($sale['Produkt']);
+        $preis = $sale['Preis'];
+        
+        $sql = "INSERT INTO Verkäufe (Kunde, Produkt, Preis) VALUES ('$kunde', '$produkt', '$preis')";
+        $conn->query($sql);
+    }
+
+    // Datenbankverbindung schließen
+    $conn->close();
+    ?>
+
+    Dieses PHP-Skript liest die Json-Daten aus der Datei "verkäufe.json",
+    verbindet sich mit der Datenbank und fügt jeden Verkauf in die "Verkäufe"-Tabelle ein.
+
+    Sobald die Daten in der Datenbank gespeichert sind, 
+    können wir fortfahren und eine einfache HTML-Seite mit Filtern erstellen. 
+
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    3- Erstellen einer einfachen Seite mit Filtern
+    Wir benötigen eine HTML-Seite mit Filtern für Kunde, Produkte und Preis. 
+    Diese Filter können entweder als Dropdown-Menüs oder als Eingabefelder gestaltet sein.
+
+    4- Ausgabe der gefilterten Ergebnisse in einer Tabelle: 
+    Wir müssen die gefilterten Ergebnisse aus der Datenbank 
+    abrufen und sie unterhalb der Filter in einer Tabelle anzeigen. 
+    Dafür verwenden wir PHP und SQL.
+
+
+    Hinzufügen einer letzten Zeile für den Gesamtpreis aller gefilterten Einträge: 
+    Nachdem wir die gefilterten Ergebnisse angezeigt haben, 
+    berechnen wir den Gesamtpreis aller Einträge und fügen ihn als letzte Zeile in die Tabelle ein.
+
+
+
+
+Schritt 1: Entwurf des Datenbankschemas
+
+sql
+Copy code
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE sales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(255) NOT NULL,
+    customer_mail VARCHAR(255) NOT NULL,
+    product_id INT NOT NULL,
+    sale_date DATETIME NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+Schritt 2: Lesen der JSON-Daten und Speichern in der Datenbank (PHP)
+
+php
+Copy code
+<?php
+$servername = "localhost";
+$username = "username";
+$password = "password";
+$dbname = "bookstore";
+
+// Verbindung zur Datenbank herstellen
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// JSON-Daten lesen
+$json_data = file_get_contents('sales_data.json');
+$data = json_decode($json_data, true);
+
+// Daten in die Datenbank einfügen
+foreach ($data as $sale) {
+    $customer_name = $sale['customer_name'];
+    $customer_mail = $sale['customer_mail'];
+    $product_id = $sale['product_id'];
+    $sale_date = $sale['sale_date'];
+
+    $sql = "INSERT INTO sales (customer_name, customer_mail, product_id, sale_date)
+            VALUES ('$customer_name', '$customer_mail', $product_id, '$sale_date')";
+
+    if ($conn->query($sql) === FALSE) {
+        echo "Fehler beim Einfügen: " . $conn->error;
+    }
+}
+
+$conn->close();
+?>
+Ich werde nun mit dem Schritt 3 beginnen, der Erstellung der HTML-Seite mit Filtern.
+
+Schritt 3: Erstellen einer HTML-Seite mit Filtern
+
+html
+Copy code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookstore Sales</title>
+    <style>
+        /* Hier kommt dein CSS für das Styling hin */
+    </style>
+</head>
+<body>
+    <h1>Bookstore Sales</h1>
+    <form id="filter-form">
+        <label for="customer-filter">Customer:</label>
+        <input type="text" id="customer-filter" name="customer-filter">
+
+        <label for="product-filter">Product:</label>
+        <input type="text" id="product-filter" name="product-filter">
+
+        <label for="price-filter">Price:</label>
+        <input type="number" id="price-filter" name="price-filter" step="0.01" min="0">
+
+        <button type="submit">Filter</button>
+    </form>
+
+    <div id="sales-table">
+        <!-- Hier wird die Tabelle mit den Verkäufen dynamisch eingefügt -->
+    </div>
+
+    <script>
+        // Hier kommt dein JavaScript für die Interaktivität hin
+    </script>
+</body>
+</html>
+
+
+
+
+4 - Ausgabe der gefilterten Ergebnisse in einer Tabelle
+
+php
+Copy code
+<?php
+$servername = "localhost";
+$username = "username";
+$password = "password";
+$dbname = "bookstore";
+
+// Verbindung zur Datenbank herstellen
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// SQL-Abfrage vorbereiten
+$sql = "SELECT sales.id, sales.customer_name, products.name AS product_name, products.price AS product_price
+        FROM sales
+        INNER JOIN products ON sales.product_id = products.id";
+
+// Filter anwenden, falls vorhanden
+if (isset($_GET['customer-filter'])) {
+    $customer_filter = $_GET['customer-filter'];
+    $sql .= " WHERE sales.customer_name LIKE '%$customer_filter%'";
+}
+
+if (isset($_GET['product-filter'])) {
+    $product_filter = $_GET['product-filter'];
+    if (isset($_GET['customer-filter'])) {
+        $sql .= " AND products.name LIKE '%$product_filter%'";
+    } else {
+        $sql .= " WHERE products.name LIKE '%$product_filter%'";
+    }
+}
+
+if (isset($_GET['price-filter'])) {
+    $price_filter = $_GET['price-filter'];
+    if (isset($_GET['customer-filter']) || isset($_GET['product-filter'])) {
+        $sql .= " AND products.price <= $price_filter";
+    } else {
+        $sql .= " WHERE products.price <= $price_filter";
+    }
+}
+
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    echo "<table>";
+    echo "<tr><th>ID</th><th>Customer</th><th>Product</th><th>Price</th></tr>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row['id'] . "</td>";
+        echo "<td>" . $row['customer_name'] . "</td>";
+        echo "<td>" . $row['product_name'] . "</td>";
+        echo "<td>$" . $row['product_price'] . "</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
+} else {
+    echo "Keine Ergebnisse gefunden.";
+}
+
+$conn->close();
+?>
+Ich werde nun die letzte Zeile für den Gesamtpreis aller gefilterten Einträge hinzufügen.
+
+
+
+
+php
+Copy code
+<?php
+$servername = "localhost";
+$username = "username";
+$password = "password";
+$dbname = "bookstore";
+
+// Verbindung zur Datenbank herstellen
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// SQL-Abfrage vorbereiten
+$sql = "SELECT SUM(products.price) AS total_price
+        FROM sales
+        INNER JOIN products ON sales.product_id = products.id";
+
+// Filter anwenden, falls vorhanden
+if (isset($_GET['customer-filter'])) {
+    $customer_filter = $_GET['customer-filter'];
+    $sql .= " WHERE sales.customer_name LIKE '%$customer_filter%'";
+}
+
+if (isset($_GET['product-filter'])) {
+    $product_filter = $_GET['product-filter'];
+    if (isset($_GET['customer-filter'])) {
+        $sql .= " AND products.name LIKE '%$product_filter%'";
+    } else {
+        $sql .= " WHERE products.name LIKE '%$product_filter%'";
+    }
+}
+
+if (isset($_GET['price-filter'])) {
+    $price_filter = $_GET['price-filter'];
+    if (isset($_GET['customer-filter']) || isset($_GET['product-filter'])) {
+        $sql .= " AND products.price <= $price_filter";
+    } else {
+        $sql .= " WHERE products.price <= $price_filter";
+    }
+}
+
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $total_price = $row['total_price'];
+    echo "<p>Total Price of Filtered Sales: $" . number_format($total_price, 2) . "</p>";
+} else {
+    echo "<p>Total Price of Filtered Sales: $0.00</p>";
+}
+
+$conn->close();
+?>
